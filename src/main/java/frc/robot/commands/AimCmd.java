@@ -22,18 +22,18 @@ public class AimCmd extends CommandBase {
     private final XboxController m_controller = new XboxController(0); 
     private final SwerveSubsystem m_swerve = new SwerveSubsystem();
 
-    private final SwerveSubsystems m_fixedMaxTranslationOutput = new SlewRateLimiter(3);
-    private final SwerveSubsystems m_fixedMaxTranslationOutput = new SlewRateLimiter(3);
-    private final SwerveSubsystems m_fixedMaxRotationOutput = new SlewRateLimiter(3);
+    private final SwerveSubsystem m_fixedMaxTranslationOutput = new SlewRateLimiter(3);
+    private final SwerveSubsystem m_fixedMaxTranslationOutput = new SlewRateLimiter(3);
+    private final SwerveSubsystem m_fixedMaxRotationOutput = new SlewRateLimiter(3);
 
 
-    @Override
+    
     public void autonomousCmd(){
         drive(false);
         m_swerve.periodic();
     }
 
-    @Override
+    
     public void teleopCmd(){
         drive(true);
     }
@@ -64,11 +64,11 @@ public class AimCmd extends CommandBase {
     private void drive(boolean fieldRelative) {
 
         var xSpeed = 
-            -m_xspeedlimiter.calculate(MathUtil.applyDeadband(m_controller.getLeftY(), 0.02)) 
+            -m_xspeedlimiter(MathUtil.applyDeadband(m_controller.getLeftY(), 0.02)) 
             * Constants.SDC.MAX_ROBOT_SPEED_M_PER_SEC;
 
         var ySpeed = 
-           -m_odometryPoseYEntry.calculate(MathUtil.applyDeadband(m_controller.getLeftY(), 0.02))
+           -SwerveSubsystem.calculate(MathUtil.applyDeadband(m_controller.getLeftY(), 0.02))
             * Constants.SDC.MAX_ROBOT_SPEED_M_PER_SEC;
         var rot = 
            -m_fixedMaxRotationOutput.calculate(MathUtil.applyDeadband(m_controller.getLeftX(), 0.02))
@@ -85,7 +85,7 @@ public class AimCmd extends CommandBase {
 
             fieldRelative = false;
         }
-     m_swerve.drive(xSpeed, ySpeed, rot, fieldRelative, periodic());
+     m_swerve.drive(xSpeed, ySpeed, rot, fieldRelative);
     }
                 
 }

@@ -42,7 +42,7 @@ public class SwerveSubsystem extends SubsystemBase {
                                                     // when triggered (by Right Bumper)
                                                     // speed will be slower, for both 
                                                     // translate and strafing, and rotating
-    private double m_fixedMaxTranslationOutput  = 
+    public double m_fixedMaxTranslationOutput  = 
             SDC.OUTPUT_DRIVE_LIMIT_FACTOR;          // This and the following are fixed 
     public double m_fixedMaxRotationOutput     =   // (changable via re-compile only)
             SDC.OUTPUT_ROTATE_LIMIT_FACTOR;         // reductions in the max speeds
@@ -54,8 +54,8 @@ public class SwerveSubsystem extends SubsystemBase {
     private GenericEntry        m_isFieldOrientedEntry;
     // private GenericEntry        m_gyroPitchEntry;
     // private GenericEntry        m_gyroRollEntry;
-    private GenericEntry        m_odometryPoseXEntry;
-    private GenericEntry        m_odometryPoseYEntry;
+    public GenericEntry        m_odometryPoseXEntry;
+    public GenericEntry        m_odometryPoseYEntry;
     private GenericEntry        m_odometryHeadingEntry;
 
     public SwerveSubsystem() {
