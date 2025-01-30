@@ -37,6 +37,7 @@ import frc.lib.util.FileRecorder.NoteRequest;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.Constants.F;
+import frc.robot.NotableConstants.IAC;
 import frc.robot.NotableConstants.MAC;
 import frc.robot.commands.RumbleCmd;
 
@@ -127,10 +128,14 @@ public class MasterArmSubsystem extends SubsystemBase {
   private boolean m_noWaitToScore;
   private boolean m_masterArmIsReadyToShoot;
   private boolean m_innerArmIsReadyToShoot;
-  private double m_waveDirection;     // + or - 1.0, used to control up and down reversals 
+  private double  m_waveDirection;     // + or - 1.0, used to control up and down reversals 
                                       // of inner arm drive to create "wave" during parade
-  private double m_waveSpeed;         // Percent output motor drive for wave
-  private double m_waveMagnitude;     // Rotations away from 0, per side, during wave
+  private double  m_waveSpeed;         // Percent output motor drive for wave
+  private double  m_waveMagnitude;     // Rotations away from the center point, per side, during wave
+  private double  m_innerArmPos;
+  private double  m_innerArmWaveCenterPos;
+  private double  m_innerArmWaveHighLimit;
+  private double  m_innerArmWaveLowLimit;
   private boolean m_cancelWave = false;   // flag used to cancel wave
 
   /******************************************************
@@ -453,7 +458,7 @@ public class MasterArmSubsystem extends SubsystemBase {
    * parade activities like "waving at crowds".
    * **************************************************/
   
-   // waveAtCrowd will raise the masterArm to the Amp score
+   // startWavingAtCrowd will raise the masterArm to the Amp score
    // position, then ocillate the inner arm about the 0 position
    // (horizontal forward) at the rate (in units of max percent
    // output) and rotation (symetrically away from 0, + and -)
@@ -465,7 +470,10 @@ public class MasterArmSubsystem extends SubsystemBase {
     // the folloing vetting is redundant, but won't hurt anything.
     // Parade code is not time or resource critical!
 
+    // Always start rotating in a positive direction, so change negative arguments,
+    // if any, to positive, and also apply arument validity filters
     m_cancelWave = false;
+    m_waveDirection = 1.0;
 
     m_waveSpeed = Math.abs(speed);
     if (m_waveSpeed > 0.9) {
@@ -477,24 +485,30 @@ public class MasterArmSubsystem extends SubsystemBase {
       m_waveMagnitude = 30.0/360.0;
     }
 
+    if (m_waveMagnitude == IAC.NORMAL_WAVE_MAGNITUDE) {
+      m_innerArmWaveCenterPos = IAC.NORMAL_WAVE_CENTER_POS;
+    } else {
+      m_innerArmWaveCenterPos = IAC.FAST_WAVE_CENTER_POS;
+    }
+
+    m_innerArmWaveHighLimit = m_innerArmWaveCenterPos + m_waveMagnitude;
+    m_innerArmWaveLowLimit = m_innerArmWaveCenterPos - m_waveMagnitude;
+
     if ((m_nowPlaying == Repetoire.NOTE_HANDLER_IDLE)
         ||
         (m_nowPlaying == Repetoire.WAIT_FOR_SPECIFIED_GOAL)) {
       changeNoteStateTo(Repetoire.PREP_FOR_WAVING);
-    } else if ((m_nowPlaying == Repetoire.WAVING_AT_CROWD)
-               ||
-               (m_nowPlaying == Repetoire.PREP_FOR_WAVING)) {
-      m_waveSpeed = speed;
-      m_waveMagnitude = rotation;
-      m_waveDirection = 1.0;
-    } else {
-      System.out.println(m_nowPlaying.toString()+" not valid for switch to Waving");
+    } else if (! ((m_nowPlaying == Repetoire.WAVING_AT_CROWD)
+                  ||
+                  (m_nowPlaying == Repetoire.PREP_FOR_WAVING)) ) {
+      System.out.println(m_nowPlaying.toString()+" is not valid for switch to Waving");
     }
   }
 
   public void stopWavingAtCrowd() {
     if (m_nowPlaying == Repetoire.WAVING_AT_CROWD) {
       changeNoteStateTo(Repetoire.RETURN_FROM_AMP);
+      m_isSafeToReturn = true;
     } else if (m_nowPlaying == Repetoire.PREP_FOR_WAVING) {
       m_cancelWave = true;
     }
@@ -1502,9 +1516,10 @@ public class MasterArmSubsystem extends SubsystemBase {
    * processWavingAtCrowd()
    ******************************************************/
   public void processWavingAtCrowd() {
-    if (((m_waveDirection == 1.0) && (m_innerArmSubsystem.getAbsInnerArmPos() > m_waveMagnitude))
+    m_innerArmPos = m_innerArmSubsystem.getAbsInnerArmPos();
+    if (((m_waveDirection == 1.0) && (m_innerArmPos > m_innerArmWaveHighLimit))
         ||
-        ((m_waveDirection == -1.0) && (m_innerArmSubsystem.getAbsInnerArmPos() < -m_waveMagnitude))) {
+        ((m_waveDirection == -1.0) && (m_innerArmPos < m_innerArmWaveLowLimit))) {
       m_waveDirection *= -1.0;
     }
     m_innerArmSubsystem.drive(m_waveDirection * m_waveSpeed);

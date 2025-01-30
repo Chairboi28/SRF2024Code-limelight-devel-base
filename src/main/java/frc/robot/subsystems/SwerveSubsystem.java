@@ -44,7 +44,7 @@ public class SwerveSubsystem extends SubsystemBase {
                                                     // translate and strafing, and rotating
     private double m_fixedMaxTranslationOutput  = 
             SDC.OUTPUT_DRIVE_LIMIT_FACTOR;          // This and the following are fixed 
-    private double m_fixedMaxRotationOutput     =   // (changable via re-compile only)
+    public double m_fixedMaxRotationOutput     =   // (changable via re-compile only)
             SDC.OUTPUT_ROTATE_LIMIT_FACTOR;         // reductions in the max speeds
                                                     // allowed, to reduce chance of 
                                                     // damage, independent of

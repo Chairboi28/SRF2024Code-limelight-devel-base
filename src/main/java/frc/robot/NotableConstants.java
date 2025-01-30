@@ -144,9 +144,10 @@ public final class NotableConstants {           // As in all these constants are
 
         public static final double NORMAL_WAVE_SPEED = 0.065;
         public static final double FAST_WAVE_SPEED = 0.125;
-        public static final double NORMAL_WAVE_MAGNITURE = 30.0/360.0;  // Rotations +/- about horizontal (0 position)
-        public static final double FAST_WAVE_MAGNITURE = 12.5/360.0;  // Rotations +/- about horizontal (0 position)
-
+        public static final double NORMAL_WAVE_MAGNITUDE = 30.0/360.0;  // Rotations +/- about horizontal (0 position)
+        public static final double FAST_WAVE_MAGNITUDE = 12.5/360.0;  // Rotations +/- about horizontal (0 position)
+        public static final double NORMAL_WAVE_CENTER_POS = -55.0/360.0;
+        public static final double FAST_WAVE_CENTER_POS = 0.0;
 
         // VERTICAL for the inner arm means intake fingers pointing up,
         // and rotation up from the defined Zero position (fingers horizontal

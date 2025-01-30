@@ -1,19 +1,19 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+//import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+// import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.NotableConstants.SC;
-import frc.robot.autos.*;
+// import frc.robot.NotableConstants.SC;
+// import frc.robot.autos.*;
 import frc.robot.commands.*;
-import frc.robot.subsystems.MasterArmSubsystem;
+// import frc.robot.subsystems.MasterArmSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.ClimbSubsystem;
+// import frc.robot.subsystems.ClimbSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -24,26 +24,26 @@ import frc.robot.subsystems.ClimbSubsystem;
 public class RobotContainer {
     /* Subsystem local object handles */
     private SwerveSubsystem          m_swerveSubsystem;
-    private MasterArmSubsystem       m_masterArmSubsystem;
-    private ClimbSubsystem           m_climbSubsystem;
+   // private MasterArmSubsystem       m_masterArmSubsystem;
+   // private ClimbSubsystem           m_climbSubsystem;
 
     private SwerveParkCmd            m_parkCmd;
 
     // Declare handles for choosable autonomous Commands
-    private JustScoreLeftAuto           m_justScoreLeftAuto;
-    private JustScoreCenterAuto         m_justScoreCenterAuto;
-    private JustScoreRightAuto          m_justScoreRightAuto;
-    private ScoreThenExitRedLeftAuto    m_scoreThenExitRedLeftAuto;
-    private ScoreThenExitRedRightAuto   m_scoreThenExitRedRightAuto;
-    private ScoreThenExitBlueLeftAuto   m_scoreThenExitBlueLeftAuto;
-    private ScoreThenExitBlueRightAuto  m_scoreThenExitBlueRightAuto;
-    private Score2NotesLeftAuto         m_score2NotesLeftAuto;
-    private Score2NotesCenterAuto       m_score2NotesCenterAuto;
-    private Score2NotesRightAuto        m_score2NotesRightAuto;
-    private ScoreMultipleNotesCenterAuto m_scoreMultipleNotesCenAuto;
+   // private JustScoreLeftAuto           m_justScoreLeftAuto;
+   // private JustScoreCenterAuto         m_justScoreCenterAuto;
+   // private JustScoreRightAuto          m_justScoreRightAuto;
+   // private ScoreThenExitRedLeftAuto    m_scoreThenExitRedLeftAuto;
+   // private ScoreThenExitRedRightAuto   m_scoreThenExitRedRightAuto;
+   // private ScoreThenExitBlueLeftAuto   m_scoreThenExitBlueLeftAuto;
+   // private ScoreThenExitBlueRightAuto  m_scoreThenExitBlueRightAuto;
+   // private Score2NotesLeftAuto         m_score2NotesLeftAuto;
+   // private Score2NotesCenterAuto       m_score2NotesCenterAuto;
+   // private Score2NotesRightAuto        m_score2NotesRightAuto;
+   // private ScoreMultipleNotesCenterAuto m_scoreMultipleNotesCenAuto;
 
     // Create sendable choosers for starting position and desired Auto routine
-    private static SendableChooser<Command> m_autoRoutineChooser = new SendableChooser<>();
+    //private static SendableChooser<Command> m_autoRoutineChooser = new SendableChooser<>();
 
     // Declare CommandXboxController
     private static CommandXboxController m_xbox;
@@ -53,8 +53,8 @@ public class RobotContainer {
         m_xbox = new CommandXboxController(0);
 
         m_swerveSubsystem = new SwerveSubsystem();
-        m_masterArmSubsystem = new MasterArmSubsystem();
-        m_climbSubsystem = new ClimbSubsystem();
+    //    m_masterArmSubsystem = new MasterArmSubsystem();
+    //    m_climbSubsystem = new ClimbSubsystem();
 
         m_swerveSubsystem.setDefaultCommand(
                 new DefaultDriveCmd(m_swerveSubsystem,
@@ -68,6 +68,7 @@ public class RobotContainer {
                                       () -> -m_xbox.getLeftX(),
                                       () -> -m_xbox.getRightX());
                     
+    /*
         m_scoreThenExitRedLeftAuto      = new ScoreThenExitRedLeftAuto(m_masterArmSubsystem,
                                                                        m_swerveSubsystem);
         m_scoreThenExitBlueLeftAuto     = new ScoreThenExitBlueLeftAuto(m_masterArmSubsystem,
@@ -100,7 +101,7 @@ public class RobotContainer {
         m_autoRoutineChooser.addOption("Score Right, BLUE exit", m_scoreThenExitBlueRightAuto);
         m_autoRoutineChooser.addOption("Score Multiple Center", m_scoreMultipleNotesCenAuto);
         SmartDashboard.putData("Autonomous Selection:", m_autoRoutineChooser);
-
+*/
         configureButtonBindings();
     }
     
@@ -110,12 +111,12 @@ public class RobotContainer {
     public static XboxController getHidXboxCtrl(){
         return m_xbox.getHID();
     }
-
+/*
     public void respondToBeingDisabled() {
         m_masterArmSubsystem.stopWavingAtCrowd();
         m_masterArmSubsystem.closeRecording();
     }
-
+*/
     /***********************************************
      * Button Bindings defines the operator UI
      ***********************************************/
@@ -179,11 +180,12 @@ public class RobotContainer {
         ALT.and(m_xbox.rightBumper()).onTrue(new InstantCommand(()-> m_swerveSubsystem.setVarMaxOutputFactor(.2)));
         m_xbox.rightBumper().onFalse(new InstantCommand(()-> m_swerveSubsystem.setVarMaxOutputFactor(1.0)));
 
-        m_xbox.x().and(ALT.negate()).onTrue(new InstantCommand(()->m_masterArmSubsystem.cancelNoteAction()));
+//        m_xbox.x().and(ALT.negate()).onTrue(new InstantCommand(()->m_masterArmSubsystem.cancelNoteAction()));
         // Swerve park 
-        ALT.and(m_xbox.x()).onTrue(m_parkCmd);
+         ALT.and(m_xbox.x()).onTrue(m_parkCmd);
         
         // Note handling activities
+/*
         m_xbox.b().onTrue(new InstantCommand(()->m_masterArmSubsystem.acquireNote()));
         m_xbox.a().and(ALT.negate()).onTrue(new InstantCommand(()->m_masterArmSubsystem.prepForAmpScore()));
         ALT.and(m_xbox.a()).onTrue(new InstantCommand(()->m_masterArmSubsystem.prepForDistantSpeakerScore(SC.SHOOTER_VOLTAGE_OUT_PASS)));
@@ -199,7 +201,7 @@ public class RobotContainer {
         // during a match if pickup angles are not working.
         // Use povRight, povLeft, povUp and povDown for fine setpoint adjustments, 
         // about 1 degree per button press)
-    /*
+
         m_xbox.povLeft().and(ALT.negate()).onTrue(new InstantCommand(()-> m_masterArmSubsystem.adjustInnerArmSetpointUp()));
         m_xbox.povRight().and(ALT.negate()).onTrue(new InstantCommand(()-> m_masterArmSubsystem.adjustInnerArmSetpointDown()));
         m_xbox.povUp().and(ALT.negate()).onTrue(new InstantCommand(()-> m_masterArmSubsystem.adjustMasterArmSetpointUp()));
@@ -213,7 +215,7 @@ public class RobotContainer {
         ALT.and(m_xbox.povDown()).onFalse(new InstantCommand(()-> m_climbSubsystem.stopElevator()));
         ALT.and(m_xbox.leftTrigger()).onTrue(new InstantCommand(()-> m_climbSubsystem.runClimbWinch()));
         ALT.and(m_xbox.leftTrigger()).onFalse(new InstantCommand(()-> m_climbSubsystem.stopClimbWinch()));
-    */
+*/
     }
 
     /*
@@ -226,6 +228,7 @@ public class RobotContainer {
      * any case other than left or right start position for setting the gyro.
      */
     public Command getSelectedAutoCommand() {
+/*
         Command selectedAuto = m_autoRoutineChooser.getSelected();
 
         if (selectedAuto == null) {
@@ -250,9 +253,11 @@ public class RobotContainer {
             m_swerveSubsystem.setGyro(300.0);
         } 
         return selectedAuto;
+*/
+        return null;
     }
 
-    public void teleopStart() {
-        m_masterArmSubsystem.teleopStart();
-    }
+//    public void teleopStart() {
+//        m_masterArmSubsystem.teleopStart();
+//    }
 }
