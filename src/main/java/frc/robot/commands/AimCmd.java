@@ -4,11 +4,14 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants;
+import frc.robot.subsytems.VisionSubsystem.limelightRangeProportional;
+import frc.robot.subsytems.VisionSubsystem.limelightAimProportional;
 
 import edu.wpi.first.wpilibj.command.CommandBase;
 import edu.wpi.first.math.controller.PIDController; 
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.LimelightHelpers;
+import frc.robor.subsytems.VisionSubsystem;
 
 public class AimCmd extends CommandBase {
     private final DriveSubsystem m_turnController;
@@ -18,6 +21,8 @@ public class AimCmd extends CommandBase {
     private final SwerveSubsystem m_odometryPoseYEntry;
     private final SwerveSubsystem m_fixedMaxTranslationOutput;
     private final MathUtil calculate;
+    private final VisionSubsystem limelightRangeProportional;
+    private final VisionSubsystem limelightAimProporional;
 
     private final XboxController m_controller = new XboxController(0); 
     private final SwerveSubsystem m_swerve = new SwerveSubsystem();
@@ -27,7 +32,7 @@ public class AimCmd extends CommandBase {
     private final SwerveSubsystem m_fixedMaxRotationOutput = new SlewRateLimiter(3);
 
 
-    
+    //TODO: fix compile errors 
     public void autonomousCmd(){
         drive(false);
         m_swerve.periodic();
@@ -38,29 +43,6 @@ public class AimCmd extends CommandBase {
         drive(true);
     }
 
-    double limelight_aim_proportional(){
-
-        
-
-     double kp = 0.035;
-
-     double targetingAngularVelocity = LimelightHelpers.getTX("limelight") * kp;
-
-     targetingAngularVelocity *= SwerveSubsystem.m_fixedMaxRotationOutput;
-
-     targetingAngularVelocity *= -1.0;
-
-     return targetingAngularVelocity;
-    }
-
-    double limelight_range_proportional(){
-        double kp = .1;
-
-        double targetingForwardSpeed = LimelightHelpers.getTY("limelight") * kp;
-        targetingForwardSpeed *= Constants.SDC.MAX_ROBOT_SPEED_M_PER_SEC;
-        targetingForwardSpeed *= -1.0;
-        return targetingForwardSpeed;
-    }
     private void drive(boolean fieldRelative) {
 
         var xSpeed = 
@@ -77,10 +59,10 @@ public class AimCmd extends CommandBase {
         if (m_controller.getAButton()) { 
             
 
-            final var rot_limelight = limelight_aim_proportional();
+            final var rot_limelight = limelightAimProportional();
             rot = rot_limelight;
 
-            final var forward_limelight = limelight_range_proportional();
+            final var forward_limelight = limelightRangeProportional();
             xSpeed = forward_limelight;
 
             fieldRelative = false;
