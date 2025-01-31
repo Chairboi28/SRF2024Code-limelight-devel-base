@@ -15,13 +15,12 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
-import edu.wpi.first.math.Util;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.filter.SlewRateLimiter;
+//import edu.wpi.first.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants;
 
-import edu.wpi.first.wpilibj.command.CommandBase;
+//import edu.wpi.first.wpilibj.command.CommandBase;
 import edu.wpi.first.math.controller.PIDController; 
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.LimelightHelpers;
@@ -34,10 +33,12 @@ public class VisionSubsystem extends SubsystemBase {
   private static NetworkTableEntry tx;
   private static NetworkTableEntry ty;
   private static NetworkTableEntry ta;
-
-  private final LimelightHelpers getTY;
-  private final LimelightHelpers getTX;
-  private final LimelightHelpers getArea;
+/*
+  private final double getTY = new getTY();
+  private final double getTX = new getTX();
+  private final double getArea = new getArea();
+  */
+  //private final Constants MAX_ROBOT_ANG_VEL_RAD_PER_SEC;
 
   public void LimelightSetup() {
     NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
@@ -88,19 +89,22 @@ public class VisionSubsystem extends SubsystemBase {
 
     double targetingAngularVelocity = LimelightHelpers.getTX("limelight") * kp;
 
-    targetingAngularVelocity *= SwerveSubsystem.m_fixedMaxRotationOutput;
+    targetingAngularVelocity *= 1.0;
 
     targetingAngularVelocity *= -1.0;
 
     return targetingAngularVelocity;
-   }
+  }
    
   public double limelightRangeProportional(){
    double kp = .1;
 
    double targetingForwardSpeed = LimelightHelpers.getTY("limelight") * kp;
-   targetingForwardSpeed *= Constants.SDC.MAX_ROBOT_SPEED_M_PER_SEC;
+
+   targetingForwardSpeed *= 1.0;
+
    targetingForwardSpeed *= -1.0;
+   
    return targetingForwardSpeed;
   }
   

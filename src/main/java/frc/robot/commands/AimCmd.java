@@ -1,73 +1,102 @@
-package frc.robot;
-import edu.wpi.first.math.Util;
+package frc.robot.commands;
+
+import frc.robot.Constants.*;
+import frc.robot.subsystems.*;
+
+import java.util.function.DoubleSupplier;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.filter.SlewRateLimiter;
+
+import frc.robot.LimelightHelpers;
+import frc.robot.subsystems.VisionSubsystem;
+
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.Constants;
-import frc.robot.subsytems.VisionSubsystem.limelightRangeProportional;
-import frc.robot.subsytems.VisionSubsystem.limelightAimProportional;
 
-import edu.wpi.first.wpilibj.command.CommandBase;
-import edu.wpi.first.math.controller.PIDController; 
-import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.LimelightHelpers;
-import frc.robor.subsytems.VisionSubsystem;
+//  import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj2.command.Command;
 
-public class AimCmd extends CommandBase {
-    private final DriveSubsystem m_turnController;
-    private final PIDController m_turnController;
-    private final SwerveSubsystem SwerveSubsystem;
-    private final SwerveSubsystem m_fixedMaxRotationOutput;
-    private final SwerveSubsystem m_odometryPoseYEntry;
-    private final SwerveSubsystem m_fixedMaxTranslationOutput;
-    private final MathUtil calculate;
-    private final VisionSubsystem limelightRangeProportional;
-    private final VisionSubsystem limelightAimProporional;
+public class AimCmd extends Command {    
+    private SwerveSubsystem m_swerveDrive;    
+    private DoubleSupplier m_translationSup;
+    private DoubleSupplier m_strafeSup;
+    private DoubleSupplier m_rotationSup;
+    // private SlewRateLimiter m_translateSRLimiter;
+    // private SlewRateLimiter m_strafeSRLimiter;
+    // private SlewRateLimiter m_rotateSRLimiter;
+    private double m_translateVal;
+    private double m_strafeVal;
+    private double m_rotateVal;
 
-    private final XboxController m_controller = new XboxController(0); 
-    private final SwerveSubsystem m_swerve = new SwerveSubsystem();
+    private double getTY;
+    private double getTX;
+    private double getArea;
 
-    private final SwerveSubsystem m_fixedMaxTranslationOutput = new SlewRateLimiter(3);
-    private final SwerveSubsystem m_fixedMaxTranslationOutput = new SlewRateLimiter(3);
-    private final SwerveSubsystem m_fixedMaxRotationOutput = new SlewRateLimiter(3);
+    private final XboxController m_controller = new XboxController(0);
 
+   // private double limelightAimProportional = new limelightAimProportional();
+   // private double limelightRangeProportional = new limelightRangeProportional();
 
-    //TODO: fix compile errors 
-    public void autonomousCmd(){
-        drive(false);
-        m_swerve.periodic();
-    }
+    public double limelightAimProportional(){
 
+        
+
+        double kp = 0.035;
     
-    public void teleopCmd(){
-        drive(true);
+        double targetingAngularVelocity = LimelightHelpers.getTX("limelight") * kp;
+    
+        targetingAngularVelocity *= 1.0;
+    
+        targetingAngularVelocity *= -1.0;
+    
+        return targetingAngularVelocity;
+    }
+       
+    public double limelightRangeProportional(){
+       double kp = .1;
+    
+       double targetingForwardSpeed = LimelightHelpers.getTY("limelight") * kp;
+    
+       targetingForwardSpeed *= 1.0;
+    
+       targetingForwardSpeed *= -1.0;
+       
+       return targetingForwardSpeed;
+    
     }
 
-    private void drive(boolean fieldRelative) {
+    public AimCmd( SwerveSubsystem swerveDriveSubsys, 
+                            DoubleSupplier translationSup, 
+                            DoubleSupplier strafeSup,
+                            DoubleSupplier rotationSup) {
+        m_translationSup = translationSup;
+        m_strafeSup = strafeSup;
+        m_rotationSup = rotationSup;
+        m_swerveDrive = swerveDriveSubsys;
+        addRequirements(swerveDriveSubsys);
 
-        var xSpeed = 
-            -m_xspeedlimiter(MathUtil.applyDeadband(m_controller.getLeftY(), 0.02)) 
-            * Constants.SDC.MAX_ROBOT_SPEED_M_PER_SEC;
-
-        var ySpeed = 
-           -SwerveSubsystem.calculate(MathUtil.applyDeadband(m_controller.getLeftY(), 0.02))
-            * Constants.SDC.MAX_ROBOT_SPEED_M_PER_SEC;
-        var rot = 
-           -m_fixedMaxRotationOutput.calculate(MathUtil.applyDeadband(m_controller.getLeftX(), 0.02))
-            * SwerveSubsystem.m_fixedMaxRotationOutput;
-
-        if (m_controller.getAButton()) { 
-            
-
-            final var rot_limelight = limelightAimProportional();
-            rot = rot_limelight;
-
-            final var forward_limelight = limelightRangeProportional();
-            xSpeed = forward_limelight;
-
-            fieldRelative = false;
-        }
-     m_swerve.drive(xSpeed, ySpeed, rot, fieldRelative);
+        // m_translateSRLimiter = new SlewRateLimiter(0.5);
+        //  m_strafeSRLimiter = new SlewRateLimiter(0.5);
+        // m_rotateSRLimiter = new SlewRateLimiter(0.5);
     }
-                
+
+    @Override
+    public void execute() {
+        // Get Values, apply Deadband 
+        m_translateVal = limelightRangeProportional();
+        m_strafeVal = 0;
+        m_rotateVal = limelightAimProportional();
+
+        // Apply slewRateLimiters
+        // m_translateVal = m_translateSRLimiter.calculate(m_translateVal);
+        // m_strafeVal = m_strafeSRLimiter.calculate(m_strafeVal);
+        // m_rotateVal = m_rotateSRLimiter.calculate(m_rotateVal);
+
+        // Drive
+        
+        m_swerveDrive.drive(new Translation2d(m_translateVal, m_strafeVal)
+                                .times(SDC.MAX_ROBOT_SPEED_M_PER_SEC), 
+                                m_rotateVal * SDC.MAX_ROBOT_ANG_VEL_RAD_PER_SEC, 
+                                true);
+        
+    }
 }

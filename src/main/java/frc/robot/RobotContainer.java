@@ -14,6 +14,7 @@ import frc.robot.commands.*;
 // import frc.robot.subsystems.MasterArmSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 // import frc.robot.subsystems.ClimbSubsystem;
+import frc.robot.commands.AimCmd;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -28,6 +29,8 @@ public class RobotContainer {
    // private ClimbSubsystem           m_climbSubsystem;
 
     private SwerveParkCmd            m_parkCmd;
+
+    private AimCmd              m_aimCmd;
 
     // Declare handles for choosable autonomous Commands
    // private JustScoreLeftAuto           m_justScoreLeftAuto;
@@ -216,7 +219,8 @@ public class RobotContainer {
         ALT.and(m_xbox.leftTrigger()).onTrue(new InstantCommand(()-> m_climbSubsystem.runClimbWinch()));
         ALT.and(m_xbox.leftTrigger()).onFalse(new InstantCommand(()-> m_climbSubsystem.stopClimbWinch()));
 */
-    }
+        m_xbox.a().onTrue(m_aimCmd);
+}
 
     /*
      * getSelectedAutoCommand is called from Robot.AutonomousInit(),
